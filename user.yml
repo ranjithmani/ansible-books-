@@ -1,0 +1,11 @@
+---
+- hosts: testing
+  remote_user: root
+  tasks:
+  - name: creating a group of users
+    user: name={{ item }} state=present shell=/bin/bash comment="users for testing" createhome=yes groups=dev,testing append=yes password="gsr5hujhvSAH%bdc6fnfkvuu7749FE#$SHHDHgdjd"
+    with_items:
+    - jack
+    - tom
+    - jim
+    - lisa
