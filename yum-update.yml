@@ -1,0 +1,6 @@
+---
+- hosts: new
+  remote_user: root
+  tasks:
+  - name: update the yum cache and upgrade the packages if it is available
+    yum: name=* update_cache=yes state=latest
