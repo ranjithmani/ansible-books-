@@ -1,0 +1,19 @@
+---
+- name: Disabling ssh weak ciphers 
+  hosts: PROD
+  remote_user: ansible
+  become: true
+  become_user: root
+  become_method: sudo
+  tasks:
+  - name: enable ciphers  configuation block in /etc/ssh/sshd_config
+    blockinfile:
+     dest: /etc/ssh/sshd_config
+     block: |
+      Ciphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,arcfour
+      MACs hmac-sha1,hmac-ripemd160
+    notify: reload sshd
+
+  handlers:
+  - name: reload sshd
+    service: name=sshd state=reloaded
