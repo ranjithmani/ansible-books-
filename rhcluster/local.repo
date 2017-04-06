@@ -1,0 +1,5 @@
+[local-repo]
+name=RHEL local repo
+enabled=1
+baseurl=file:///media
+gpgcheck=0
