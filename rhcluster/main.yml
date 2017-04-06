@@ -1,0 +1,35 @@
+---
+- hosts: mcs
+  remote_user: root
+  tasks:
+  - name: creating cluster user
+    user: name=hacluster  shell=/bin/bash comment="cluster user" home=/home/hacluster move_home=yes state=present
+  - name: mounting the DVD
+    mount: name=/media src=/dev/sr0 fstype=iso9660 opts=ro state=present
+  - name: creating repository for cluster packages
+    copy: src=/etc/ansible/playbooks/rhcluster/local.repo dest=/etc/yum.repos.d/local.repo owner=root group=root mode=644
+  - name: Installing cluster packages
+    yum: state=present name={{ item }}
+    with_items:
+    - cman
+    - lvm2-cluster
+    - rgmanager
+    - gfs2-utils
+
+  - name: adding cluster ip details in hosts
+    blockinfile:
+      dest: /etc/hosts
+      block: |
+       192.168.1.61 mcs1
+       192.168.1.62 mcs2
+
+  - name: Installing cluster configuration file
+    copy: src=/etc/ansible/playbooks/rhcluster/cluster.conf dest=/etc/cluster/cluster.conf owner=root group=root mode=644
+    notify:
+    - restart cman
+    - restart rgmanager
+  handlers:
+  - name: restart cman
+    action: service name=cman state=started enabled=yes
+  - name: restart rgmanager
+    action: service name=rgmanager state=restarted enabled=yes
