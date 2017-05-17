@@ -1,0 +1,15 @@
+---
+- hosts: cfs
+  remote_user: root
+  serial: 1
+  vars:
+    dist_name: RedHat
+    minor_version: 6.8
+  tasks:
+  - name: backing up the current repositories.
+    shell: (mkdir -p /etc/yum.repos.d/back ; mv /etc/yum.repos.d/*.repo /etc/yum.repos.d/back)
+    when: ansible_distribution == {{ dist_name }} and ansible_distribution_version == {{ minor_version }}
+
+  - name: connecting the yum repository
+    copy: dest=/etc/yum.repos.d/rhel6-9.repo content="[Redhat6.9]\nname=RHEL6.9\nenabled=1\ngpgcheck=0\nbaseurl=http://10.10.7.8/repo/rhel69" mode=644 force=yes backup=yes
+    when: ansible_distribution == {{ dist_name }} and ansible_distribution_version == {{ minor_version }}
